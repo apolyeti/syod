@@ -1,6 +1,7 @@
 # Example file showing a basic pygame "game loop"
 import pygame
 import math
+import random
 from bullet import Bullet
 
 # set up constants
@@ -22,6 +23,10 @@ MAX_POINTS = 1000
 INVINCIBLE_TIME = 1500
 INVINCIBLE_TIMER = 0
 INVINCIBLE = False
+SHAKE_DURATION = 100
+SHAKE_MAG = 7
+SHAKE_TIMER = 0
+SHAKE_OFFSET = pygame.Vector2(0, 0)
 
 # pygame setup
 pygame.init()
@@ -57,15 +62,17 @@ def spawn_bullet():
         CURR_ANGLE += ROTATION_SPEED * dt
 
 def handle_bullets():
-    global LIVES, INVINCIBLE, INVINCIBLE_TIME, INVINCIBLE_TIMER
+    global LIVES, INVINCIBLE, INVINCIBLE_TIME, INVINCIBLE_TIMER, SHAKE_TIMER, SHAKE_MAG
     for bullet in bullets:
         bullet.move(dt)
         bullet.check_bounds(screen)
         if not INVINCIBLE and bullet.check_collision(player_pos):
             bullets.remove(bullet)
             LIVES -= 1
+            SHAKE_MAG += 2
             INVINCIBLE = True
             INVINCIBLE_TIMER = pygame.time.get_ticks()
+            SHAKE_TIMER = pygame.time.get_ticks()
         
 
 
@@ -107,7 +114,7 @@ def check_sprint():
     return False
 
 def handle_movement():
-    global SHOW_CONTROLS, POINTS
+    global SHOW_CONTROLS, POINTS, SHAKE_MAG, SHAKE_OFFSET, SHAKE_TIMER, player_pos
     if check_bounds():
         return
     keys = pygame.key.get_pressed()
@@ -137,13 +144,17 @@ def handle_movement():
             else:
                 player_pos.x += 300 * dt
 
+                
+
+
 def reinit():
-    global POINTS, POINT_MULTIPLIER, CURR_ANGLE, LIVES, GAME_STATE
+    global POINTS, POINT_MULTIPLIER, CURR_ANGLE, LIVES, GAME_STATE, SHAKE_MAG, player_pos
     POINTS = 0
     POINT_MULTIPLIER = 0.9
     CURR_ANGLE = 0
     LIVES = 5
     GAME_STATE = "GAME"
+    SHAKE_MAG = 7
     player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
     pygame.draw.circle(screen, BORDER_COLOR, player_pos, PLAYER_RADIUS)
     bullets.clear()
@@ -151,9 +162,17 @@ def reinit():
     
 # draw the screen, border, and player
 def draw_screen():
+    global SHAKE_MAG, SHAKE_OFFSET, SHAKE_TIMER
     screen.fill(BG_COLOR)
-    pygame.draw.rect(screen, BORDER_COLOR, (0, 0, screen.get_width(), screen.get_height()), BORDER_WIDTH)
-    pygame.draw.circle(screen, BORDER_COLOR, player_pos, PLAYER_RADIUS)
+    # pygame.draw.rect(screen, BORDER_COLOR, (0, 0, screen.get_width(), screen.get_height()), BORDER_WIDTH)
+    # pygame.draw.circle(screen, BORDER_COLOR, player_pos, PLAYER_RADIUS)
+    pygame.draw.rect(screen, BORDER_COLOR, (
+        SHAKE_OFFSET.x,  # Adjust X position of the border
+        SHAKE_OFFSET.y,  # Adjust Y position of the border
+        screen.get_width(),  # Adjust the width of the border
+        screen.get_height()  # Adjust the height of the border
+    ), BORDER_WIDTH)
+    pygame.draw.circle(screen, BORDER_COLOR, player_pos + SHAKE_OFFSET, PLAYER_RADIUS)
     text = "POINTS: " + str(round(POINTS))
     font = pygame.font.Font("./font.ttf", 20)
     text = font.render(text, True, TEXT_COLOR)
@@ -173,6 +192,17 @@ def draw_screen():
         text = font.render("Shift to sprint", True, "#FFFFFF")
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, 60))
         screen.blit(text, text_rect)
+
+    if SHAKE_TIMER > 0:
+            elapsed_time = pygame.time.get_ticks() - SHAKE_TIMER
+            if elapsed_time < SHAKE_DURATION:
+                SHAKE_OFFSET = pygame.Vector2(
+                    random.uniform(-SHAKE_MAG, SHAKE_MAG),
+                    random.uniform(-SHAKE_MAG, SHAKE_MAG)
+                )
+            else:
+                SHAKE_OFFSET = pygame.Vector2(0, 0)
+                SHAKE_TIMER = 0
         
 def draw_game_over():
         screen.fill(BG_COLOR)
