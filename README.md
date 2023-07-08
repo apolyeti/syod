@@ -15,5 +15,5 @@ point multiplier increases the more bullets you spawn in.
 ## How to run
 
 ```zsh
-python3 main.py
+python3 game.py
 ```
