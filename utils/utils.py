@@ -1,7 +1,7 @@
 import pygame
 import math
 import random
-from bullet import Bullet
+from utils.bullet import Bullet
 
 # global variables
 
@@ -10,7 +10,7 @@ BORDER_WIDTH = 20
 PLAYER_RADIUS = 7
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
-FONT = "./font.ttf"
+FONT = "utils/font.ttf"
 FONT_COLOR = "#bc7ad6"
 BG_COLOR = "#443554"
 BORDER_COLOR = "#19151c"
@@ -160,7 +160,7 @@ def draw_screen():
     ), BORDER_WIDTH)
     pygame.draw.circle(screen, BORDER_COLOR, player_pos + SHAKE_OFFSET, PLAYER_RADIUS)
     text = "POINTS: " + str(round(POINTS))
-    font = pygame.font.Font("./font.ttf", 20)
+    font = pygame.font.Font(FONT, 20)
     text = font.render(text, True, FONT_COLOR)
     screen.blit(text, (20, 20))
     text = "LIVES: " + str(LIVES)

@@ -1,6 +1,6 @@
 # Example file showing a basic pygame "game loop"
 import pygame
-from utils import *
+from utils.utils import *
 GAME_STATE = "GAME"
 
 # initialize pygame
