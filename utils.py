@@ -4,12 +4,14 @@ import random
 from bullet import Bullet
 
 # global variables
+
 SHOW_CONTROLS = True
 BORDER_WIDTH = 20
 PLAYER_RADIUS = 7
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
-TEXT_COLOR = "#bc7ad6"
+FONT = "./font.ttf"
+FONT_COLOR = "#bc7ad6"
 BG_COLOR = "#443554"
 BORDER_COLOR = "#19151c"
 ROTATION_SPEED = 500
@@ -17,7 +19,6 @@ POINTS = 0
 POINT_MULTIPLIER = 0.9 # 1.0 when game begins
 CURR_ANGLE = 0
 LIVES = 5
-GAME_STATE = "GAME"
 MAX_POINTS = 1000
 INVINCIBLE_TIME = 1500
 INVINCIBLE_TIMER = 0
@@ -28,12 +29,15 @@ SHAKE_TIMER = 0
 SHAKE_OFFSET = pygame.Vector2(0, 0)
 BULLET_SPEED = 300
 
-# pygame.init()
+# set up display and player position for util functions
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+# set up bullets list and dt for util functions
 bullets = []
 dt = 0
 
+
+# for dt to update in game.py
 def update_dt(new_dt):
     global dt
     dt = new_dt
@@ -60,11 +64,7 @@ def spawn_bullet():
     MAX_POINTS *= 1.5 * POINT_MULTIPLIER
     angle_step = 360 // 4
     current_angle = CURR_ANGLE
-    # for angle in range(0, 360, angle_step):
-    #     bullet_dir = pygame.Vector2(1, 0).rotate(angle)
-    #     bullet_pos = player_pos + bullet_dir * (PLAYER_RADIUS + 10)
-    #     bullet = Bullet(bullet_pos, bullet_dir * BULLET_SPEED, 3)
-    #     bullets.append(bullet)
+
     for _ in range(4):
         bullet_dir = pygame.Vector2(1, 0).rotate(current_angle)
         bullet_pos = player_pos + bullet_dir * (PLAYER_RADIUS + 10)
@@ -76,7 +76,6 @@ def spawn_bullet():
         CURR_ANGLE += ROTATION_SPEED * dt
 
 def handle_bullets():
-
     global LIVES, INVINCIBLE, INVINCIBLE_TIME, INVINCIBLE_TIMER, SHAKE_TIMER, SHAKE_MAG
     for bullet in bullets:
         bullet.move(dt)
@@ -138,12 +137,11 @@ def handle_movement():
                 player_pos.x += 300 * dt
 
 def reinit():
-    global POINTS, POINT_MULTIPLIER, CURR_ANGLE, LIVES, GAME_STATE, SHAKE_MAG, player_pos
+    global POINTS, POINT_MULTIPLIER, CURR_ANGLE, LIVES, SHAKE_MAG, player_pos
     POINTS = 0
     POINT_MULTIPLIER = 0.9
     CURR_ANGLE = 0
     LIVES = 5
-    GAME_STATE = "GAME"
     SHAKE_MAG = 7
     player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
     pygame.draw.circle(screen, BORDER_COLOR, player_pos, PLAYER_RADIUS)
@@ -154,8 +152,6 @@ def reinit():
 def draw_screen():
     global SHAKE_MAG, SHAKE_OFFSET, SHAKE_TIMER
     screen.fill(BG_COLOR)
-    # pygame.draw.rect(screen, BORDER_COLOR, (0, 0, screen.get_width(), screen.get_height()), BORDER_WIDTH)
-    # pygame.draw.circle(screen, BORDER_COLOR, player_pos, PLAYER_RADIUS)
     pygame.draw.rect(screen, BORDER_COLOR, (
         SHAKE_OFFSET.x,  # Adjust X position of the border
         SHAKE_OFFSET.y,  # Adjust Y position of the border
@@ -165,21 +161,21 @@ def draw_screen():
     pygame.draw.circle(screen, BORDER_COLOR, player_pos + SHAKE_OFFSET, PLAYER_RADIUS)
     text = "POINTS: " + str(round(POINTS))
     font = pygame.font.Font("./font.ttf", 20)
-    text = font.render(text, True, TEXT_COLOR)
+    text = font.render(text, True, FONT_COLOR)
     screen.blit(text, (20, 20))
     text = "LIVES: " + str(LIVES)
-    text = font.render(text, True, TEXT_COLOR)
+    text = font.render(text, True, FONT_COLOR)
     screen.blit(text, (20, 40))
 
     for bullet in bullets:
         bullet.draw(screen)
     
     if SHOW_CONTROLS:
-        font = pygame.font.Font("./font.ttf", 20)
-        text = font.render("WASD to move", True, "#FFFFFF")
+        font = pygame.font.Font(FONT, 20)
+        text = font.render("WASD TO MOVE", True, "#FFFFFF")
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, 40))
         screen.blit(text, text_rect)
-        text = font.render("Shift to sprint", True, "#FFFFFF")
+        text = font.render("SHIFT TO SPRINT", True, "#FFFFFF")
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, 60))
         screen.blit(text, text_rect)
 
@@ -196,22 +192,22 @@ def draw_screen():
         
 def draw_game_over():
         screen.fill(BG_COLOR)
-        font = pygame.font.Font("./font.ttf", 30)
-        text = font.render("GAME OVER", True, TEXT_COLOR)
+        font = pygame.font.Font(FONT, 30)
+        text = font.render("GAME OVER", True, FONT_COLOR)
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
         screen.blit(text, text_rect)
-        text = font.render("POINTS: " + str(round(POINTS)), True, TEXT_COLOR)
+        text = font.render("POINTS: " + str(round(POINTS)), True, FONT_COLOR)
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 30))
         screen.blit(text, text_rect)
         # make it so that the play again text flashes
-        text = font.render("RETRY?", True, TEXT_COLOR)
+        text = font.render("RETRY?", True, FONT_COLOR)
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80))
         screen.blit(text, text_rect)
         show_text = True
         if pygame.time.get_ticks() % 1000 < 500:
             show_text = False
         if show_text:
-            text = font.render("PRESS SPACE", True, TEXT_COLOR)
+            text = font.render("PRESS SPACE", True, FONT_COLOR)
             text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 110))
             screen.blit(text, text_rect)
         if pygame.key.get_pressed()[pygame.K_SPACE]:
