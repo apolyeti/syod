@@ -154,7 +154,6 @@ def draw_screen():
         screen.blit(text, text_rect)
         
 def draw_game_over():
-    while running:
         screen.fill(BG_COLOR)
         font = pygame.font.Font("./font.ttf", 30)
         text = font.render("GAME OVER", True, TEXT_COLOR)
