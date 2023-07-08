@@ -14,10 +14,11 @@ BG_COLOR = "#443554"
 BORDER_COLOR = "#19151c"
 ROTATION_SPEED = 500
 POINTS = 0
-POINT_MULTIPLIER = 1
+POINT_MULTIPLIER = 0.9 # 1.0 when game begins
 CURR_ANGLE = 0
 LIVES = 5
 GAME_STATE = "GAME"
+MAX_POINTS = 1000
 
 # pygame setup
 pygame.init()
@@ -34,7 +35,9 @@ BULLET_SPEED = 300
 def spawn_bullet():
     global CURR_ANGLE
     global POINT_MULTIPLIER
+    global MAX_POINTS
     POINT_MULTIPLIER += 0.1
+    MAX_POINTS *= 1.5 * POINT_MULTIPLIER
     angle_step = 360 // 4
     current_angle = CURR_ANGLE
     # for angle in range(0, 360, angle_step):
@@ -42,7 +45,7 @@ def spawn_bullet():
     #     bullet_pos = player_pos + bullet_dir * (PLAYER_RADIUS + 10)
     #     bullet = Bullet(bullet_pos, bullet_dir * BULLET_SPEED, 3)
     #     bullets.append(bullet)
-    for i in range(4):
+    for _ in range(4):
         bullet_dir = pygame.Vector2(1, 0).rotate(current_angle)
         bullet_pos = player_pos + bullet_dir * (PLAYER_RADIUS + 10)
         bullet = Bullet(bullet_pos, bullet_dir * BULLET_SPEED, 3, current_angle)
@@ -105,7 +108,8 @@ def handle_movement():
     # check if a movement key is pressed
     if keys[pygame.K_w] or keys[pygame.K_s] or keys[pygame.K_a] or keys[pygame.K_d]:
         SHOW_CONTROLS = False
-        POINTS += len(bullets) * POINT_MULTIPLIER
+        if POINTS < MAX_POINTS:
+            POINTS += len(bullets) * POINT_MULTIPLIER
         if keys[pygame.K_w]:
             if check_sprint():
                 player_pos.y -= 500 * dt
@@ -146,7 +150,7 @@ def draw_screen():
     screen.fill(BG_COLOR)
     pygame.draw.rect(screen, BORDER_COLOR, (0, 0, screen.get_width(), screen.get_height()), BORDER_WIDTH)
     pygame.draw.circle(screen, BORDER_COLOR, player_pos, PLAYER_RADIUS)
-    text = "POINTS: " + str(round(POINTS, 1))
+    text = "POINTS: " + str(round(POINTS))
     font = pygame.font.Font("./font.ttf", 20)
     text = font.render(text, True, TEXT_COLOR)
     screen.blit(text, (20, 20))
@@ -172,7 +176,7 @@ def draw_game_over():
         text = font.render("GAME OVER", True, TEXT_COLOR)
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
         screen.blit(text, text_rect)
-        text = font.render("POINTS: " + str(round(POINTS, 1)), True, TEXT_COLOR)
+        text = font.render("POINTS: " + str(round(POINTS)), True, TEXT_COLOR)
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 30))
         screen.blit(text, text_rect)
         # make it so that the play again text flashes
