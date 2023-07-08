@@ -3,7 +3,7 @@ import pygame
 import math
 from bullet import Bullet
 
-# constants
+# set up constants
 SHOW_CONTROLS = True
 BORDER_WIDTH = 20
 PLAYER_RADIUS = 7
@@ -19,6 +19,9 @@ CURR_ANGLE = 0
 LIVES = 5
 GAME_STATE = "GAME"
 MAX_POINTS = 1000
+INVINCIBLE_TIME = 1500
+INVINCIBLE_TIMER = 0
+INVINCIBLE = False
 
 # pygame setup
 pygame.init()
@@ -33,9 +36,7 @@ bullets = []
 BULLET_SPEED = 300
 
 def spawn_bullet():
-    global CURR_ANGLE
-    global POINT_MULTIPLIER
-    global MAX_POINTS
+    global CURR_ANGLE, POINT_MULTIPLIER, MAX_POINTS
     POINT_MULTIPLIER += 0.1
     MAX_POINTS *= 1.5 * POINT_MULTIPLIER
     angle_step = 360 // 4
@@ -56,19 +57,25 @@ def spawn_bullet():
         CURR_ANGLE += ROTATION_SPEED * dt
 
 def handle_bullets():
-    global LIVES
+    global LIVES, INVINCIBLE, INVINCIBLE_TIME, INVINCIBLE_TIMER
     for bullet in bullets:
         bullet.move(dt)
         bullet.check_bounds(screen)
-        if bullet.check_collision(player_pos):
+        if not INVINCIBLE and bullet.check_collision(player_pos):
             bullets.remove(bullet)
             LIVES -= 1
+            INVINCIBLE = True
+            INVINCIBLE_TIMER = pygame.time.get_ticks()
+        
 
 
         if bullet.pos[0] <= bullet.radius or bullet.pos[0] >= screen.get_width() - bullet.radius:
             bullet.reflect(pygame.Vector2(1, 0))
         if bullet.pos[1] <= bullet.radius or bullet.pos[1] >= screen.get_height() - bullet.radius:
             bullet.reflect(pygame.Vector2(0, 1))
+
+        if INVINCIBLE and pygame.time.get_ticks() - INVINCIBLE_TIMER > INVINCIBLE_TIME:
+            INVINCIBLE = False
 
 
 
@@ -100,8 +107,7 @@ def check_sprint():
     return False
 
 def handle_movement():
-    global SHOW_CONTROLS
-    global POINTS
+    global SHOW_CONTROLS, POINTS
     if check_bounds():
         return
     keys = pygame.key.get_pressed()
@@ -132,16 +138,14 @@ def handle_movement():
                 player_pos.x += 300 * dt
 
 def reinit():
-    global POINTS
-    global POINT_MULTIPLIER
-    global CURR_ANGLE
-    global LIVES
-    global GAME_STATE
+    global POINTS, POINT_MULTIPLIER, CURR_ANGLE, LIVES, GAME_STATE
     POINTS = 0
-    POINT_MULTIPLIER = 1
+    POINT_MULTIPLIER = 0.9
     CURR_ANGLE = 0
     LIVES = 5
     GAME_STATE = "GAME"
+    player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+    pygame.draw.circle(screen, BORDER_COLOR, player_pos, PLAYER_RADIUS)
     bullets.clear()
 
     
@@ -215,7 +219,6 @@ while running:
         handle_bullets()
     elif GAME_STATE == "GAME_OVER":
         draw_game_over()
-        continue
 
     if LIVES == 0:
         GAME_STATE = "GAME_OVER"
