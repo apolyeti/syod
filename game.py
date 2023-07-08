@@ -11,6 +11,9 @@ SCREEN_HEIGHT = 480
 TEXT_COLOR = "#bc7ad6"
 BG_COLOR = "#443554"
 BORDER_COLOR = "#19151c"
+ROTATION_SPEED = 100
+POINTS = 0
+POINT_MULTIPLIER = 1
 
 # pygame setup
 pygame.init()
@@ -25,6 +28,8 @@ bullets = []
 BULLET_SPEED = 300
 
 def spawn_bullet():
+    global POINT_MULTIPLIER
+    POINT_MULTIPLIER += 0.1
     angle_step = 360 // 4
     for angle in range(0, 360, angle_step):
         bullet_dir = pygame.Vector2(1, 0).rotate(angle)
@@ -69,33 +74,34 @@ def check_sprint():
 
 def handle_movement():
     global SHOW_CONTROLS
+    global POINTS
     if check_bounds():
         return
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w or pygame.K_UP]:
-        if check_sprint():
-            player_pos.y -= 500 * dt
-        else: 
-            player_pos.y -= 300 * dt
+    # check if a movement key is pressed
+    if keys[pygame.K_w] or keys[pygame.K_s] or keys[pygame.K_a] or keys[pygame.K_d]:
         SHOW_CONTROLS = False
-    if keys[pygame.K_s or pygame.K_DOWN]:
-        if check_sprint():
-            player_pos.y += 500 * dt
-        else:
-            player_pos.y += 300 * dt
-        SHOW_CONTROLS = False
-    if keys[pygame.K_a or pygame.K_LEFT]:
-        if check_sprint():
-            player_pos.x -= 500 * dt
-        else:
-            player_pos.x -= 300 * dt
-        SHOW_CONTROLS = False
-    if keys[pygame.K_d or pygame.K_RIGHT]:
-        if check_sprint():
-            player_pos.x += 500 * dt
-        else:
-            player_pos.x += 300 * dt
-        SHOW_CONTROLS = False
+        POINTS += len(bullets) * POINT_MULTIPLIER
+        if keys[pygame.K_w]:
+            if check_sprint():
+                player_pos.y -= 500 * dt
+            else: 
+                player_pos.y -= 300 * dt
+        if keys[pygame.K_s]:
+            if check_sprint():
+                player_pos.y += 500 * dt
+            else:
+                player_pos.y += 300 * dt
+        if keys[pygame.K_a]:
+            if check_sprint():
+                player_pos.x -= 500 * dt
+            else:
+                player_pos.x -= 300 * dt
+        if keys[pygame.K_d]:
+            if check_sprint():
+                player_pos.x += 500 * dt
+            else:
+                player_pos.x += 300 * dt
 
 
 
@@ -112,6 +118,10 @@ def draw_screen():
     screen.fill(BG_COLOR)
     pygame.draw.rect(screen, BORDER_COLOR, (0, 0, screen.get_width(), screen.get_height()), BORDER_WIDTH)
     pygame.draw.circle(screen, BORDER_COLOR, player_pos, PLAYER_RADIUS)
+    text = "POINTS: " + str(round(POINTS, 1))
+    font = pygame.font.Font("./font.ttf", 20)
+    text = font.render(text, True, TEXT_COLOR)
+    screen.blit(text, (20, 20))
 
     for bullet in bullets:
         bullet.draw(screen)
