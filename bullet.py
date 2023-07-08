@@ -13,10 +13,11 @@ PLAYER_RADIUS = 5
 # four bullets should spawn around the player and move along the crosshair when the player presses space
 
 class Bullet:
-    def __init__(self, pos, vel, radius):
+    def __init__(self, pos, vel, radius, rotation_angle):
         self.pos = pos
         self.vel = vel
         self.radius = radius
+        self.rotation_angle = rotation_angle
 
     def draw(self, screen):
         pygame.draw.circle(screen, "#FF0000", self.pos, self.radius)
@@ -41,6 +42,11 @@ class Bullet:
         if ((self.pos[0] - player_pos[0]) ** 2 + (self.pos[1] - player_pos[1]) ** 2) ** 0.5 < self.radius + PLAYER_RADIUS:
             return True
         return False
+    
+    def rotate(self, angle):
+        rotated_vel = pygame.Vector2(self.vel).rotate(angle)
+        self.vel[0] = rotated_vel[0]
+        self.vel[1] = rotated_vel[1]
     
     def bounce(self):
         self.vel[0] *= -1

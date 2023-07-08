@@ -1,5 +1,6 @@
 # Example file showing a basic pygame "game loop"
 import pygame
+import math
 from bullet import Bullet
 
 # constants
@@ -14,6 +15,7 @@ BORDER_COLOR = "#19151c"
 ROTATION_SPEED = 100
 POINTS = 0
 POINT_MULTIPLIER = 1
+CURR_ANGLE = 0
 
 # pygame setup
 pygame.init()
@@ -28,14 +30,25 @@ bullets = []
 BULLET_SPEED = 300
 
 def spawn_bullet():
+    global CURR_ANGLE
     global POINT_MULTIPLIER
     POINT_MULTIPLIER += 0.1
     angle_step = 360 // 4
-    for angle in range(0, 360, angle_step):
-        bullet_dir = pygame.Vector2(1, 0).rotate(angle)
+    current_angle = CURR_ANGLE
+    # for angle in range(0, 360, angle_step):
+    #     bullet_dir = pygame.Vector2(1, 0).rotate(angle)
+    #     bullet_pos = player_pos + bullet_dir * (PLAYER_RADIUS + 10)
+    #     bullet = Bullet(bullet_pos, bullet_dir * BULLET_SPEED, 3)
+    #     bullets.append(bullet)
+    for i in range(4):
+        bullet_dir = pygame.Vector2(1, 0).rotate(current_angle)
         bullet_pos = player_pos + bullet_dir * (PLAYER_RADIUS + 10)
-        bullet = Bullet(bullet_pos, bullet_dir * BULLET_SPEED, 3)
+        bullet = Bullet(bullet_pos, bullet_dir * BULLET_SPEED, 3, current_angle)
         bullets.append(bullet)
+        current_angle += angle_step
+        current_angle %= 360
+        bullet.rotate(math.radians(current_angle))
+        CURR_ANGLE += ROTATION_SPEED * dt
 
 def handle_bullets():
     for bullet in bullets:
