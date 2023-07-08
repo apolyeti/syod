@@ -127,6 +127,19 @@ def handle_movement():
             else:
                 player_pos.x += 300 * dt
 
+def reinit():
+    global POINTS
+    global POINT_MULTIPLIER
+    global CURR_ANGLE
+    global LIVES
+    global GAME_STATE
+    POINTS = 0
+    POINT_MULTIPLIER = 1
+    CURR_ANGLE = 0
+    LIVES = 5
+    GAME_STATE = "GAME"
+    bullets.clear()
+
     
 # draw the screen, border, and player
 def draw_screen():
@@ -162,8 +175,20 @@ def draw_game_over():
         text = font.render("POINTS: " + str(round(POINTS, 1)), True, TEXT_COLOR)
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 30))
         screen.blit(text, text_rect)
+        # make it so that the play again text flashes
+        text = font.render("RETRY?", True, TEXT_COLOR)
+        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80))
+        screen.blit(text, text_rect)
+        show_text = True
+        if pygame.time.get_ticks() % 1000 < 500:
+            show_text = False
+        if show_text:
+            text = font.render("PRESS SPACE", True, TEXT_COLOR)
+            text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 110))
+            screen.blit(text, text_rect)
+        if pygame.key.get_pressed()[pygame.K_SPACE]:
+            reinit()
         pygame.display.flip()
-        dt = clock.tick(60) / 1000
 
 # game loop
 while running:
