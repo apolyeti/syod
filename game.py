@@ -12,10 +12,12 @@ SCREEN_HEIGHT = 480
 TEXT_COLOR = "#bc7ad6"
 BG_COLOR = "#443554"
 BORDER_COLOR = "#19151c"
-ROTATION_SPEED = 100
+ROTATION_SPEED = 500
 POINTS = 0
 POINT_MULTIPLIER = 1
 CURR_ANGLE = 0
+LIVES = 5
+GAME_STATE = "GAME"
 
 # pygame setup
 pygame.init()
@@ -51,12 +53,19 @@ def spawn_bullet():
         CURR_ANGLE += ROTATION_SPEED * dt
 
 def handle_bullets():
+    global LIVES
     for bullet in bullets:
         bullet.move(dt)
-        if bullet.check_bounds(screen):
-            bullet.bounce()
+        bullet.check_bounds(screen)
         if bullet.check_collision(player_pos):
             bullets.remove(bullet)
+            LIVES -= 1
+
+
+        if bullet.pos[0] <= bullet.radius or bullet.pos[0] >= screen.get_width() - bullet.radius:
+            bullet.reflect(pygame.Vector2(1, 0))
+        if bullet.pos[1] <= bullet.radius or bullet.pos[1] >= screen.get_height() - bullet.radius:
+            bullet.reflect(pygame.Vector2(0, 1))
 
 
 
@@ -77,6 +86,8 @@ def check_bounds():
         player_pos.y = screen.get_height() - bound_width
         return True
     return False
+
+
 
 # check if player is holding shift
 def check_sprint():
@@ -116,15 +127,6 @@ def handle_movement():
             else:
                 player_pos.x += 300 * dt
 
-
-
-
-
-
-
-
-
-
     
 # draw the screen, border, and player
 def draw_screen():
@@ -135,6 +137,9 @@ def draw_screen():
     font = pygame.font.Font("./font.ttf", 20)
     text = font.render(text, True, TEXT_COLOR)
     screen.blit(text, (20, 20))
+    text = "LIVES: " + str(LIVES)
+    text = font.render(text, True, TEXT_COLOR)
+    screen.blit(text, (20, 40))
 
     for bullet in bullets:
         bullet.draw(screen)
@@ -147,6 +152,19 @@ def draw_screen():
         text = font.render("Shift to sprint", True, "#FFFFFF")
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, 60))
         screen.blit(text, text_rect)
+        
+def draw_game_over():
+    while running:
+        screen.fill(BG_COLOR)
+        font = pygame.font.Font("./font.ttf", 30)
+        text = font.render("GAME OVER", True, TEXT_COLOR)
+        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+        screen.blit(text, text_rect)
+        text = font.render("POINTS: " + str(round(POINTS, 1)), True, TEXT_COLOR)
+        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 30))
+        screen.blit(text, text_rect)
+        pygame.display.flip()
+        dt = clock.tick(60) / 1000
 
 # game loop
 while running:
@@ -160,13 +178,21 @@ while running:
             if event.key == pygame.K_SPACE:
                 spawn_bullet()
 
-        
-    # draw the screen
-    draw_screen()
-    # handle player movement
-    handle_movement()
-    # handle bullets
-    handle_bullets()
+    if GAME_STATE == "GAME": 
+        # draw the screen
+        draw_screen()
+        # handle player movement
+        handle_movement()
+        # handle bullets
+        handle_bullets()
+    elif GAME_STATE == "GAME_OVER":
+        draw_game_over()
+        continue
+
+    if LIVES == 0:
+        GAME_STATE = "GAME_OVER"
+
+
 
 
     # render the screen

@@ -1,4 +1,5 @@
 import pygame 
+import math
 PLAYER_RADIUS = 5
 
 # make an object Bullet that is spawned when the player presses space
@@ -29,12 +30,16 @@ class Bullet:
     def check_bounds(self, screen):
         bound = 25
         if self.pos[0] < bound:
+            self.reflect(pygame.Vector2(1, 0))
             return True
         if self.pos[0] > screen.get_width() - bound:
+            self.reflect(pygame.Vector2(1, 0))
             return True
         if self.pos[1] < bound:
+            self.reflect(pygame.Vector2(0, 1))
             return True
         if self.pos[1] > screen.get_height() - bound:
+            self.reflect(pygame.Vector2(0, 1))
             return True
         return False
 
@@ -51,4 +56,10 @@ class Bullet:
     def bounce(self):
         self.vel[0] *= -1
         self.vel[1] *= -1
+    
+    def reflect(self, normal):
+        dot_product = self.vel[0] * normal[0] + self.vel[1] * normal[1]
+        reflected_vel = pygame.Vector2(self.vel) - 2 * dot_product * pygame.Vector2(normal)
+        self.vel[0] = reflected_vel[0]
+        self.vel[1] = reflected_vel[1]
     
