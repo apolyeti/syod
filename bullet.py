@@ -1,6 +1,7 @@
 import pygame 
 import math
 PLAYER_RADIUS = 5
+BULLET_COLOR = "#da9df2"
 
 # make an object Bullet that is spawned when the player presses space
 # the bullet should have a position and a constant velocity
@@ -21,7 +22,7 @@ class Bullet:
         self.rotation_angle = rotation_angle
 
     def draw(self, screen):
-        pygame.draw.circle(screen, "#FF0000", self.pos, self.radius)
+        pygame.draw.circle(screen, BULLET_COLOR, self.pos, self.radius)
 
     def move(self, dt):
         self.pos[0] += self.vel[0] * dt

@@ -6,7 +6,7 @@ from bullet import Bullet
 # constants
 SHOW_CONTROLS = True
 BORDER_WIDTH = 20
-PLAYER_RADIUS = 5
+PLAYER_RADIUS = 7
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 TEXT_COLOR = "#bc7ad6"
