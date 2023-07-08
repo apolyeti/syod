@@ -26,7 +26,14 @@ class Bullet:
         self.pos[1] += self.vel[1] * dt
 
     def check_bounds(self, screen):
-        if self.pos[0] < 0 or self.pos[0] > screen.get_width() or self.pos[1] < 0 or self.pos[1] > screen.get_height():
+        bound = 25
+        if self.pos[0] < bound:
+            return True
+        if self.pos[0] > screen.get_width() - bound:
+            return True
+        if self.pos[1] < bound:
+            return True
+        if self.pos[1] > screen.get_height() - bound:
             return True
         return False
 
