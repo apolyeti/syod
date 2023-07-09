@@ -5,6 +5,7 @@
 simple pygame where you survive your own disaster.
 press space to spawn in more bullets to dodge. the longer you survive, the more points you get.
 point multiplier increases the more bullets you spawn in.
+points cap at a certain amount depending on how many bullets you spawn in.
 
 ## Game
 

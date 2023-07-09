@@ -1,5 +1,4 @@
 import pygame 
-import math
 PLAYER_RADIUS = 5
 BULLET_COLOR = "#da9df2"
 
