@@ -137,12 +137,13 @@ def handle_movement():
                 player_pos.x += 300 * dt
 
 def reinit():
-    global POINTS, POINT_MULTIPLIER, CURR_ANGLE, LIVES, SHAKE_MAG, player_pos
+    global POINTS, POINT_MULTIPLIER, CURR_ANGLE, LIVES, SHAKE_MAG, SHOW_CONTROLS, player_pos
     POINTS = 0
     POINT_MULTIPLIER = 0.9
     CURR_ANGLE = 0
     LIVES = 5
     SHAKE_MAG = 7
+    SHOW_CONTROLS = True
     player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
     pygame.draw.circle(screen, BORDER_COLOR, player_pos, PLAYER_RADIUS)
     bullets.clear()
