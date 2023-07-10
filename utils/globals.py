@@ -1,4 +1,4 @@
-import pygame
+from pygame import Vector2
 
 BULLET_COLOR = "#da9df2"
 SHOW_CONTROLS = True
@@ -22,5 +22,5 @@ INVINCIBLE = False
 SHAKE_DURATION = 100
 SHAKE_MAG = 7
 SHAKE_TIMER = 0
-SHAKE_OFFSET = pygame.Vector2(0, 0)
+SHAKE_OFFSET = Vector2(0, 0)
 BULLET_SPEED = 300
