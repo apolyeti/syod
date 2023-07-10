@@ -70,13 +70,6 @@ def handle_bullets():
             INVINCIBLE_TIMER = pygame.time.get_ticks()
             SHAKE_TIMER = pygame.time.get_ticks()
             return True if LIVES == 0 else False
-        
-
-
-        if bullet.pos[0] <= bullet.radius or bullet.pos[0] >= screen.get_width() - bullet.radius:
-            bullet.reflect(pygame.Vector2(1, 0))
-        if bullet.pos[1] <= bullet.radius or bullet.pos[1] >= screen.get_height() - bullet.radius:
-            bullet.reflect(pygame.Vector2(0, 1))
 
         if INVINCIBLE and pygame.time.get_ticks() - INVINCIBLE_TIMER > INVINCIBLE_TIME:
             INVINCIBLE = False
@@ -121,13 +114,14 @@ def handle_movement():
 
 # restart game
 def reinit():
-    global POINTS, POINT_MULTIPLIER, CURR_ANGLE, LIVES, SHAKE_MAG, SHOW_CONTROLS, player_pos
+    global POINTS, POINT_MULTIPLIER, CURR_ANGLE, LIVES, SHAKE_MAG, SHOW_CONTROLS, MAX_POINTS, player_pos
     POINTS = 0
     POINT_MULTIPLIER = 0.9
     CURR_ANGLE = 0
     LIVES = 5
     SHAKE_MAG = 7
     SHOW_CONTROLS = True
+    MAX_POINTS = 5000
     player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
     pygame.draw.circle(screen, BORDER_COLOR, player_pos, PLAYER_RADIUS)
     bullets.clear()
@@ -177,27 +171,27 @@ def draw_screen():
 
 # game over screen        
 def draw_game_over():
-        screen.fill(BG_COLOR)
-        font = pygame.font.Font(FONT, 30)
-        text = font.render("GAME OVER", True, FONT_COLOR)
-        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+    screen.fill(BG_COLOR)
+    font = pygame.font.Font(FONT, 30)
+    text = font.render("GAME OVER", True, FONT_COLOR)
+    text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+    screen.blit(text, text_rect)
+    text = font.render("POINTS: " + str(round(POINTS)), True, FONT_COLOR)
+    text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 30))
+    screen.blit(text, text_rect)
+    # make it so that the play again text flashes
+    text = font.render("RETRY?", True, FONT_COLOR)
+    text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80))
+    screen.blit(text, text_rect)
+    show_text = True
+    if pygame.time.get_ticks() % 1000 < 500:
+        show_text = False
+    if show_text:
+        text = font.render("PRESS SPACE", True, FONT_COLOR)
+        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 110))
         screen.blit(text, text_rect)
-        text = font.render("POINTS: " + str(round(POINTS)), True, FONT_COLOR)
-        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 30))
-        screen.blit(text, text_rect)
-        # make it so that the play again text flashes
-        text = font.render("RETRY?", True, FONT_COLOR)
-        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 80))
-        screen.blit(text, text_rect)
-        show_text = True
-        if pygame.time.get_ticks() % 1000 < 500:
-            show_text = False
-        if show_text:
-            text = font.render("PRESS SPACE", True, FONT_COLOR)
-            text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 110))
-            screen.blit(text, text_rect)
-        if pygame.key.get_pressed()[pygame.K_SPACE]:
-            reinit()
-            return True
-        pygame.display.flip()
-        return False
+    if pygame.key.get_pressed()[pygame.K_SPACE]:
+        reinit()
+        return True
+    pygame.display.flip()
+    return False
