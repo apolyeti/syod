@@ -1,6 +1,5 @@
 import pygame 
-PLAYER_RADIUS = 5
-BULLET_COLOR = "#da9df2"
+from utils.globals import PLAYER_RADIUS, BULLET_COLOR
 
 # make an object Bullet that is spawned when the player presses space
 # the bullet should have a position and a constant velocity

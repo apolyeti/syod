@@ -1,5 +1,6 @@
 import pygame
 
+BULLET_COLOR = "#da9df2"
 SHOW_CONTROLS = True
 BORDER_WIDTH = 20
 PLAYER_RADIUS = 7
