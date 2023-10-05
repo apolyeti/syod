@@ -15,6 +15,7 @@ class Bullet:
         self.pos[0] += self.vel[0] * dt
         self.pos[1] += self.vel[1] * dt
 
+    # check if bullet has hit the border
     def check_bounds(self, screen):
         bound = 25
         if self.pos[0] < bound:
